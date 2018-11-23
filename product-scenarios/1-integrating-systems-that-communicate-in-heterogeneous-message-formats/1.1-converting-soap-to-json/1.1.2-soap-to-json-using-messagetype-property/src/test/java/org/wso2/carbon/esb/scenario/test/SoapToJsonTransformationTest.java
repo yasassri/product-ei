@@ -26,13 +26,21 @@ public class SoapToJsonTransformationTest extends ScenarioTestBase {
 
     @Test(description = "1.1.2.1", enabled = true, dataProvider = "1.1.2.1")
     public void convertValidSoapToJson(String request, String expectedResponse) throws Exception {
+        log.info("Executing test case 1.1.2.1");
+
         SimpleHttpClient httpClient = new SimpleHttpClient();
+
+        log.info("proxyServiceUrl is set as : " + proxyServiceUrl);
 
         HttpResponse httpResponse = httpClient.doPost(proxyServiceUrl, null, request, "application/xml");
         String responsePayload = httpClient.getResponsePayload(httpResponse);
 
+        log.info("Actual response received 1.1.2.1: " + responsePayload);
+
+        Assert.assertEquals(httpResponse.getStatusLine().getStatusCode(), 200, "SOAP to JSON transformation failed");
+
         JSONObject jsonExpectedResponse = new JSONObject(expectedResponse);
-        JSONObject jsonActualResponse = new JSONObject(responsePayload);
+        JSONObject jsonActualResponse = new JSONObject(responsePayload.trim());
 
         String expectedString = jsonExpectedResponse.toString();
         String actualString = jsonActualResponse.toString();
@@ -42,13 +50,19 @@ public class SoapToJsonTransformationTest extends ScenarioTestBase {
 
     @Test(description = "1.1.2.2", enabled = true, dataProvider = "1.1.2.2")
     public void convertMalformedSoapToJson(String request, String expectedResponse) throws Exception {
+        log.info("Executing test case 1.1.2.2");
+
         SimpleHttpClient httpClient = new SimpleHttpClient();
+
+        log.info("proxyServiceUrl is set as : " + proxyServiceUrl);
 
         HttpResponse httpResponse = httpClient.doPost(proxyServiceUrl, null, request, "application/xml");
         String responsePayload = httpClient.getResponsePayload(httpResponse);
 
+        log.info("Actual response received 1.1.2.2: " + responsePayload);
+
         JSONObject jsonExpectedResponse = new JSONObject(expectedResponse);
-        JSONObject jsonActualResponse = new JSONObject(responsePayload);
+        JSONObject jsonActualResponse = new JSONObject(responsePayload.trim());
 
         String expectedString = jsonExpectedResponse.toString();
         String actualString = jsonActualResponse.toString();
@@ -56,9 +70,8 @@ public class SoapToJsonTransformationTest extends ScenarioTestBase {
         Assert.assertEquals(expectedString, actualString);
     }
 
-    @AfterClass(description = "Server Cleanup")
+    @AfterClass(description = "Server Cleanup", alwaysRun = true)
     public void cleanup() throws Exception {
-        undeployCarbonApplication(carFileName);
     }
 
     @DataProvider(name = "1.1.2.1")
